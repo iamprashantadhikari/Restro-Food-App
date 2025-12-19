@@ -1,5 +1,6 @@
 const userModel = require("../../models/userModel");
 const bcrypt = require("bcryptjs");
+const JWT = require("jsonwebtoken");
 
 //REGISTER
 const registerController = async (req, res) => {
@@ -62,21 +63,27 @@ const loginController = async (req, res) => {
     // Check user
     const user = await userModel.findOne({ email });
     if (user) {
-      if (password == user.password) {
+      if (await bcrypt.compare(password, user.password)) {
+        const token = JWT.sign({ id: user._id }, process.env.JWT_SECRET, {
+          expiresIn: "7d",
+        });
+        user.password = undefined;
         return res.status(200).send({
           success: true,
           message: "Login Successfully",
+          token,
+          user,
         });
       } else {
         return res.status(422).send({
           success: false,
-          message: "Password Incorrect, Please try again!",
+          message: "Invalid Credientials, Please try again!",
         });
       }
     } else {
-      return res.status(422).send({
+      return res.status(404).send({
         success: false,
-        message: "Incorrect Credientials",
+        message: "User not found",
       });
     }
   } catch (error) {
