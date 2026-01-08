@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.get("/get", authMiddleware, getUser);
 router.post("/update", authMiddleware, updateUser);
-router.post("change-password", authMiddleware, updatePassword);
+router.post("/change-password", authMiddleware, updatePassword);
 
 module.exports = router;
