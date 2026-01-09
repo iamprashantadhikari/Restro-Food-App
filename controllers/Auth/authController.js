@@ -1,6 +1,7 @@
 const userModel = require("../../models/userModel");
 const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
+const crypto = require("crypto");
 
 //REGISTER
 const registerController = async (req, res) => {
@@ -96,4 +97,39 @@ const loginController = async (req, res) => {
   }
 };
 
-module.exports = { registerController, loginController };
+const forgotPassword = async (req, res) => {
+  try {
+    const email = req.body.email;
+    if (!email) {
+      return res.status(422).send({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    const userExist = await userModel.findOne({ email });
+    if (!userExist) {
+      return res.status(404).send({
+        success: false,
+        message: "Invalid email",
+      });
+    }
+    const otp = crypto.randomInt(100000, 999999).toString();
+    userExist.otp = otp;
+    await userExist.save();
+    // send otp logic goes here in future
+
+    return res.status(200).send({
+      success: true,
+      message: "Otp sent Successfully to registerd email",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+module.exports = { registerController, loginController, forgotPassword };
