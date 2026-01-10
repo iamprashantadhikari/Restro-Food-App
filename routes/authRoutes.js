@@ -3,6 +3,7 @@ const {
   registerController,
   loginController,
   forgotPassword,
+  verifyOtp,
 } = require("../controllers/Auth/authController");
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/login", loginController);
 
 // Forgot Password
 router.post("/forgot-password", forgotPassword);
+router.post("/verify-otp", verifyOtp);
 
 module.exports = router;

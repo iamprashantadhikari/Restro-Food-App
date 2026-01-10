@@ -35,8 +35,10 @@ const userSchema = mongoose.Schema(
         "https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2470054311.jpg",
     },
     otp: {
-      type: Number,
+      type: String,
     },
+    otpExpires: { type: Date },
+    resetPasswordToken: { type: String },
   },
   { timestamps: true }
 );

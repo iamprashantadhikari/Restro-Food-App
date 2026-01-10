@@ -114,13 +114,18 @@ const forgotPassword = async (req, res) => {
       });
     }
     const otp = crypto.randomInt(100000, 999999).toString();
-    userExist.otp = otp;
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+    userExist.otp = hashedOtp;
+    userExist.otpExpires = Date.now() + 10 * 60 * 1000;
     await userExist.save();
     // send otp logic goes here in future
+    // this logic is used for sms
 
     return res.status(200).send({
       success: true,
       message: "Otp sent Successfully to registerd email",
+      otp: otp, // temp
+      requestId: userExist._id,
     });
   } catch (error) {
     console.log(error);
@@ -132,4 +137,55 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-module.exports = { registerController, loginController, forgotPassword };
+const verifyOtp = async (req, res) => {
+  try {
+    const { requestId, otp } = req.body;
+    if (!requestId || !otp) {
+      return res.status(422).send({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+    const user = await userModel.findById(requestId);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+    if (user.otpExpires < new Date()) {
+      return res.status(422).send({
+        success: false,
+        message: "Otp Expired",
+      });
+    }
+    if (user.otp !== hashedOtp) {
+      return res.status(422).send({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+    res.send("ues");
+
+    // const user = await userModel.findOne({
+    //   _id: requestId,
+    //   otp: hashedOtp,
+    //   otpExpires: { $gt: Date.now() },
+    // });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+module.exports = {
+  registerController,
+  loginController,
+  forgotPassword,
+  verifyOtp,
+};
