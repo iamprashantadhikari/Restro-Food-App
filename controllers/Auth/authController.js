@@ -146,6 +146,12 @@ const verifyOtp = async (req, res) => {
         message: "All fields are required",
       });
     }
+    if (requestId.length !== 24) {
+      return res.status(422).send({
+        success: false,
+        message: "Invalid Request",
+      });
+    }
     const user = await userModel.findById(requestId);
     if (!user) {
       return res.status(404).send({
@@ -154,19 +160,37 @@ const verifyOtp = async (req, res) => {
       });
     }
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
-    if (user.otpExpires < new Date()) {
-      return res.status(422).send({
-        success: false,
-        message: "Otp Expired",
-      });
-    }
+
     if (user.otp !== hashedOtp) {
       return res.status(422).send({
         success: false,
         message: "Invalid OTP",
       });
     }
-    res.send("ues");
+
+    if (user.otpExpires < new Date()) {
+      return res.status(422).send({
+        success: false,
+        message: "Otp Expired",
+      });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    user.resetPasswordToken = hashedResetToken;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Otp Verified",
+      resetToken: resetToken,
+    });
 
     // const user = await userModel.findOne({
     //   _id: requestId,
