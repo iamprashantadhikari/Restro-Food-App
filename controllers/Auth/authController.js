@@ -207,9 +207,59 @@ const verifyOtp = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    const { resetToken, newPassword, confirmPassword } = req.body;
+    if (!resetToken || !newPassword || !confirmPassword) {
+      return res.status(402).send({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(422).send({
+        success: false,
+        message: "Password didn't match",
+      });
+    }
+
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    user = await userModel.findOne({ resetPasswordToken: hashedToken });
+    if (!user) {
+      return res.status(403).send({
+        success: false,
+        message: "Invalid Token",
+      });
+    }
+
+    const hashPassword = bcrypt.hashSync(newPassword, 10);
+    user.password = hashPassword;
+    user.resetPasswordToken = undefined;
+    await user.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Password Reset Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
 module.exports = {
   registerController,
   loginController,
   forgotPassword,
   verifyOtp,
+  resetPassword,
 };
