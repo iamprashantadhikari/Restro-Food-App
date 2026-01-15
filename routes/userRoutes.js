@@ -3,6 +3,7 @@ const {
   getUser,
   updateUser,
   updatePassword,
+  deleteUser,
 } = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
@@ -12,4 +13,6 @@ router.get("/get", authMiddleware, getUser);
 router.post("/update", authMiddleware, updateUser);
 router.post("/change-password", authMiddleware, updatePassword);
 
+// Delete User
+router.delete("/delete/:id", authMiddleware, deleteUser);
 module.exports = router;

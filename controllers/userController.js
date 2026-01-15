@@ -105,4 +105,21 @@ const updatePassword = async (req, res) => {
   }
 };
 
-module.exports = { getUser, updateUser, updatePassword };
+const deleteUser = async (req, res) => {
+  try {
+    await userModel.findByIdAndDelete(req.params.id);
+    res.status(200).send({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+module.exports = { getUser, updateUser, updatePassword, deleteUser };
