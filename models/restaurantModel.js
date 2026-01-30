@@ -34,9 +34,9 @@ const restaurantSchema = mongoose.Schema(
     code: { type: String },
     chords: {
       id: { type: String },
-      latitude: { type: String },
+      latitude: { type: Number },
       latitudeDelta: { type: String },
-      longitude: { type: String },
+      longitude: { type: Number },
       longitudeDelta: { type: String },
       address: { type: String },
       title: { type: String },
@@ -44,3 +44,5 @@ const restaurantSchema = mongoose.Schema(
   },
   { timestamps: true },
 );
+
+module.exports = mongoose.model("Restaurant", restaurantSchema);
