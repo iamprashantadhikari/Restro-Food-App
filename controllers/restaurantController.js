@@ -50,4 +50,56 @@ const createRestaurant = async (req, res) => {
   }
 };
 
-module.exports = { createRestaurant };
+const getAllRestaurant = async (req, res) => {
+  try {
+    const restaurants = await restaurantModel.find({});
+    if (!restaurants) {
+      return res.status(404).send({
+        success: false,
+        message: "No Restaurant Available",
+      });
+    }
+    res.status(200).send({
+      success: true,
+      totalCount: restaurants.length,
+      restaurants,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+const getRestaurant = async (req, res) => {
+  try {
+    const restaurantId = req.params.id;
+    if (!restaurantId) {
+      return res.status(422).send({
+        success: false,
+        message: "Restaurant Id is required",
+      });
+    }
+    const restaurant = await restaurantModel.findById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).send({
+        success: false,
+        message: "Restaurant Not Found",
+      });
+    }
+    res.status(200).send({
+      success: true,
+      restaurant,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+module.exports = { createRestaurant, getAllRestaurant, getRestaurant };
