@@ -53,12 +53,17 @@ const createRestaurant = async (req, res) => {
 const getAllRestaurant = async (req, res) => {
   try {
     const restaurants = await restaurantModel.find({});
-    if (!restaurants) {
+    if (restaurants.length === 0) {
       return res.status(404).send({
         success: false,
         message: "No Restaurant Available",
       });
     }
+
+    // const formated = restaurants.map((r) => ({
+    //   id: r._id,
+    //   name: r.title,
+    // }));
     res.status(200).send({
       success: true,
       totalCount: restaurants.length,
