@@ -19,6 +19,8 @@ app.use(cors()); //Cross-Origin Resource Sharing
 app.use(express.json());
 app.use(morgan("dev")); //http request logger in cmd(dev)
 
+app.use("/public", express.static("public"));
+
 //route
 app.use("/api/v1/test", require("./routes/web"));
 app.use("/api/v1/auth", require("./routes/authRoutes"));
