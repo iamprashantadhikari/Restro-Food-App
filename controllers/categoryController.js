@@ -1,10 +1,11 @@
-const deleteFile = require("../helpers/fileHelper");
+const { deleteFile } = require("../helpers/fileHelper");
 const categoryModel = require("../models/categoryModel");
 
 const createCategory = async (req, res) => {
+  let imagePath = null;
   try {
     const { name } = req.body;
-    const imagePath = req.file ? req.file.path : null;
+    imagePath = req.file ? req.file.path : null;
 
     if (!name) {
       deleteFile(imagePath);
@@ -41,7 +42,9 @@ const getAllCategory = async (req, res) => {
       // ...item.toObject(),
       _id: item.id,
       name: item.name,
-      imageUrl: process.env.BASE_URL + item.imageUrl.replace(/\\/g, "/"),
+      imageUrl: item.imageUrl
+        ? process.env.BASE_URL + item.imageUrl.replace(/\\/g, "/")
+        : "",
       status: item.status,
     }));
 
@@ -61,10 +64,11 @@ const getAllCategory = async (req, res) => {
 };
 
 const updateCategory = async (req, res) => {
+  let imagePath = null;
   try {
     const { name, status } = req.body;
     const { id } = req.params;
-    const imagePath = req.file ? req.file.path : null;
+    imagePath = req.file ? req.file.path : null;
 
     const category = await categoryModel.findById(id);
     if (!category) {
