@@ -15,4 +15,4 @@ const deleteFile = (filePath) => {
   }
 };
 
-module.exports = deleteFile;
+module.exports = { deleteFile };

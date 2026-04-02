@@ -3,6 +3,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const {
   createCategory,
   getAllCategory,
+  updateCategory,
 } = require("../controllers/categoryController");
 const upload = require("../middlewares/upload");
 
@@ -12,5 +13,12 @@ const router = express.Router();
 router.post("/add", authMiddleware, upload.single("image"), createCategory);
 
 router.get("/all", getAllCategory);
+
+router.post(
+  "/update/:id",
+  authMiddleware,
+  upload.single("image"),
+  updateCategory,
+);
 
 module.exports = router;

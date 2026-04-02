@@ -7,7 +7,7 @@ const createCategory = async (req, res) => {
     const imagePath = req.file ? req.file.path : null;
 
     if (!name) {
-      // deleteFile(imagePath);
+      deleteFile(imagePath);
       return res.status(422).send({
         success: false,
         message: "Category name is required",
@@ -60,4 +60,45 @@ const getAllCategory = async (req, res) => {
   }
 };
 
-module.exports = { createCategory, getAllCategory };
+const updateCategory = async (req, res) => {
+  try {
+    const { name, status } = req.body;
+    const { id } = req.params;
+    const imagePath = req.file ? req.file.path : null;
+
+    const category = await categoryModel.findById(id);
+    if (!category) {
+      deleteFile(imagePath);
+      return res.status(404).send({
+        success: false,
+        message: "Category Not Found",
+      });
+    }
+
+    if (name) category.name = name;
+    if (status) category.status = status;
+
+    if (req.file) {
+      if (category.imageUrl) {
+        deleteFile(category.imageUrl);
+      }
+
+      category.imageUrl = imagePath;
+    }
+
+    await category.save();
+    res.status(200).send({
+      success: true,
+      message: "Category Updated Successfully",
+    });
+  } catch (error) {
+    deleteFile(imagePath);
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+module.exports = { createCategory, getAllCategory, updateCategory };
