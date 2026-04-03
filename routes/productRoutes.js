@@ -1,5 +1,9 @@
 const express = require("express");
-const { createProduct } = require("../controllers/productController");
+const {
+  createProduct,
+  getAllProducts,
+  updateProduct,
+} = require("../controllers/productController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload");
 
@@ -14,6 +18,19 @@ router.post(
   },
   upload.single("image"),
   createProduct,
+);
+
+router.get("/all", getAllProducts);
+
+router.post(
+  "/update/:id",
+  authMiddleware,
+  (req, res, next) => {
+    req.uploadFolder = "products";
+    next();
+  },
+  upload.single("image"),
+  updateProduct,
 );
 
 module.exports = router;
