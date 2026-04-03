@@ -44,7 +44,7 @@ const getAllCategory = async (req, res) => {
       name: item.name,
       imageUrl: item.imageUrl
         ? process.env.BASE_URL + item.imageUrl.replace(/\\/g, "/")
-        : "",
+        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcuWTrty8k4hhQ-HE-Msg0huP8iT3QIplP-w&s",
       status: item.status,
     }));
 

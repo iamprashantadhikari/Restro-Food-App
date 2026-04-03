@@ -10,13 +10,26 @@ const upload = require("../middlewares/upload");
 const router = express.Router();
 
 // router.get('all')
-router.post("/add", authMiddleware, upload.single("image"), createCategory);
+router.post(
+  "/add",
+  authMiddleware,
+  (req, res, next) => {
+    req.uploadFolder = "categories";
+    next();
+  },
+  upload.single("image"),
+  createCategory,
+);
 
 router.get("/all", getAllCategory);
 
 router.post(
   "/update/:id",
   authMiddleware,
+  (req, res, next) => {
+    req.uploadFolder = "categories";
+    next();
+  },
   upload.single("image"),
   updateCategory,
 );
