@@ -4,10 +4,10 @@ const productModel = require("../models/productModel");
 const createProduct = async (req, res) => {
   let imagePath = null;
   try {
-    const { name, price } = req.body;
+    const { name, price, description, restaurant, rating } = req.body;
     imagePath = req.file ? req.file.path : null;
 
-    if (!name || !price) {
+    if (!name || !price || !restaurant) {
       deleteFile(imagePath);
       return res.status(422).send({
         success: false,
@@ -15,10 +15,15 @@ const createProduct = async (req, res) => {
       });
     }
 
+    const productCode = generateProductCode(name);
     await productModel.create({
       name,
       price,
       image: imagePath,
+      code: productCode,
+      restaurant,
+      description,
+      rating,
     });
     res.status(200).send({
       success: true,
@@ -36,16 +41,19 @@ const createProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await productModel.find({});
+    const products = await productModel
+      .find({})
+      .select("-__v -createdAt -updatedAt");
 
     const filteredProducts = products.map((item) => ({
-      _id: item._id,
-      name: item.name,
-      price: item.price,
+      ...item.toObject(),
+      // _id: item._id,
+      // name: item.name,
+      // price: item.price,
       image: item.image
         ? process.env.BASE_URL + item.image.replace(/\\/g, "/")
         : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcuWTrty8k4hhQ-HE-Msg0huP8iT3QIplP-w&s",
-      status: item.status,
+      // status: item.status,
     }));
     res.status(200).send({
       success: true,
@@ -104,3 +112,9 @@ const updateProduct = async (req, res) => {
 };
 
 module.exports = { createProduct, getAllProducts, updateProduct };
+
+const generateProductCode = (name) => {
+  const codePart = name.substring(0, 3).toUpperCase();
+  const random = Math.floor(Math.random() * 1000);
+  return `${codePart}-${random}`;
+};
