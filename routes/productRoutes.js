@@ -3,6 +3,7 @@ const {
   createProduct,
   getAllProducts,
   updateProduct,
+  getProductByRestaurant,
 } = require("../controllers/productController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload");
@@ -21,6 +22,8 @@ router.post(
 );
 
 router.get("/all", getAllProducts);
+
+router.get("/get_by_restaurant/:id", getProductByRestaurant);
 
 router.post(
   "/update/:id",
