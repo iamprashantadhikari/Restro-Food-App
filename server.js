@@ -28,6 +28,7 @@ app.use("/api/v1/user", require("./routes/userRoutes"));
 app.use("/api/v1/restaurant", require("./routes/restaurantRoute"));
 app.use("/api/v1/category", require("./routes/categoryRoutes"));
 app.use("/api/v1/product", require("./routes/productRoutes"));
+app.use("/api/v1/order", require("./routes/orderRoutes"));
 
 app.get("/", (req, res) => {
   return res.status(200).send("<h1>Welcome to the food-app server.</h1>");
