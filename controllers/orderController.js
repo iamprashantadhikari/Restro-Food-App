@@ -40,4 +40,35 @@ const placeOrder = async (req, res) => {
   }
 };
 
-module.exports = { placeOrder };
+const changeOrderStatus = async (req, res) => {
+  try {
+    if (req.user.usertype != "admin") {
+      return res.status(401).send({
+        success: false,
+        message: "Unauthorized Access",
+      });
+    }
+    const orderId = req.params.id;
+    const { status } = req.body;
+    if (!orderId || !status) {
+      return res.status(422).send({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    await orderModel.findByIdAndUpdate(orderId, { status }, { new: true });
+    res.status(200).send({
+      success: true,
+      message: `Order Status Changed Successfully to ${status}`,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+module.exports = { placeOrder, changeOrderStatus };
