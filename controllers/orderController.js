@@ -71,4 +71,23 @@ const changeOrderStatus = async (req, res) => {
   }
 };
 
-module.exports = { placeOrder, changeOrderStatus };
+const getAllOrders = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const orders = await orderModel
+      .find({ user: userId })
+      .select("-createdAt -updatedAt -__v");
+    res.status(200).send({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+};
+
+module.exports = { placeOrder, changeOrderStatus, getAllOrders };
